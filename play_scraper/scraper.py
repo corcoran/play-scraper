@@ -94,9 +94,21 @@ class PlayScraper(object):
         icon = urljoin(
             self._base_url,
             soup.select_one('img.T75of').attrs['src'].split('=')[0])
-        screenshots = [urljoin(
-            self._base_url,
-            re.sub(r'([^\s]+)\s.*', r'\1', img.attrs['srcset'])) for img in soup.select('[data-screenshot-item-index] img')]
+        screenshots = []
+        for img in soup.select('[data-screenshot-item-index] img'):
+            print(img)
+            try:
+                screenshots.append(urljoin(
+                    self._base_url,
+                    re.sub(r'([^\s]+)\s.*', r'\1',
+                    img.attrs['srcset'])))
+            except KeyError:
+                screenshots.append(urljoin(
+                    self._base_url,
+                    re.sub(r'([^\s]+)\s.*', r'\1',
+                    img.attrs['data-srcset'])))
+            print(img.attrs)
+
         thumbnails = [urljoin(
             self._base_url,
             img.attrs['src']) for img in soup.select('[data-screenshot-item-index] img')]
@@ -265,7 +277,7 @@ class PlayScraper(object):
         :param soup: a strained BeautifulSoup object of an app
         :return: a dictionary of app additional details
         """
-        additional_info = soup.select_one('div.xyOfqd')
+        additional_info = soup.select_one('div.IxB2fe')
         additional_info_sections = additional_info.select('div.hAyfc')
 
         sections_data = {}
